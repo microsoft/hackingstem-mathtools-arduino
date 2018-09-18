@@ -1,89 +1,14 @@
-//===------__ Hacking STEM – MeasuringToolsCode.X.X.X.ino – Arduino __-----===//
-// For use with the "MEASURING TOOLS Using the Pythagorean Theorem to Explore
-// Topography in 2D/3D Space" lesson plan available from Microsoft Education
-// Workshop at http://aka.ms/hackingSTEM
-//
-// Overview:
-// This project uses Rotary Encoders to find angles.
-//
-// Output to Serial reports angle, count, and revolutions of two encoders, in
-// format: "angleOne,countOne,revolutionsOne,angleTwo,countTwo,revolutionsTwo"
-// example:
-// "353,-1087,-4,45,45,0,"
-//
-// For encoder one:
-// AngleOne: Angle, in degrees. Can be positive or negative.
-// CountOne: Count from the rotary encoder signal, can be positive or negative.
-// RevolutionsOne: Count of full rotations, can be positive or negative.
-//
-// For encoder two:
-// AngleTwo: Angle, in degrees. Can be positive or negative.
-// CountTwo: Count from the rotary encoder signal, can be positive or negative.
-// RevolutionsOne: Count of full rotations, can be positive or negative.
-//
-// How rotary encoders work:
-// Rotary encoders interface through two digital pins on the arduino. State
-// changes on these pins will progress through four combinations per step
-//
-// So to transition from step 0 to step 1, there will be four state changes:
-//
-// Step 0:   LOW LOW
-// Step 1/4: HIGH LOW
-// Step 2/4: HIGH HIGH
-// Step 3/4: LOW HIGH
-// Step 1:   LOW LOW
-//
-//   Direction:
-//   To go the other direction, from 1 to 0, the pins will go through the same
-//   four state changes in reverse. The direction of change can be understood by
-//   comparing the current state to the last state.
-//
-//   Step Count:
-//   To keep track of the step count, we add 1 for every step encountered in
-//   the forward rotation and subtract one for each step encountered in the
-//   backward direction. For example, the step count of four steps forward and
-//   one steps back is 3, or (1 + 1 + 1 + 1 - 1). The step count of 3 steps
-//   backward, two steps forward, and one step backward is negative 2, or
-//   (0 - 1 - 1 - 1 + 1 + 1 -1)
-//
-//   Degree:
-//   With an encoder that has 360 steps per revoltion, degree is simply the
-//   remainder left over by dividing step count by 360. For example,
-//   The remainder of 792 Steps / 360 Steps Per Revolution is 72, so the
-//   current degree is 72.
-//
-//   Rotation Count:
-//   To count rotations simply sum every positive and negative step and divide
-//   by the steps per revolution of the encoder and round down to get a whole
-//   number. For example: 792 Steps / 360 Steps Per Revolution is 2 steps
-//   (that's 2.2 rounded down).
-//
-// With the 360 step rotary encoder degree translation is easy, the
-// current step position will be
-//
-// This project uses an Arduino UNO microcontroller board, information at:
-// https://www.arduino.cc/en/main/arduinoBoardUno
-//
-// This project uses a 360 steps per revoltion rotary encoder, such as:
-// lpd3806-360bm-g5-24c
-//
-// Based on project by Ben Buxton, who has a wonderful post and video
-// explaination of rotary encoders on arduino:
-// http://www.buxtronix.net/2011/10/rotary-encoders-done-properly.html
-//
-// Original Source
-// https://github.com/buxtronix/arduino/tree/master/libraries/Rotary
-//
-// Comments, contributions, suggestions, bug reports, and feature requests
-// are welcome! For source code and bug reports see:
-// http://github.com/[TODO github path to Hacking STEM]
-//
-// Copyright [year], [your name] Microsoft EDU Workshop - HackingSTEM
-// MIT License terms detailed in LICENSE.md
-//===----------------------------------------------------------------------===//
+/*
+  This Code uses 2 EncodersDoneProperly
+
+*/
+
 // Enable weak pullups
 #define ENABLE_PULLUPS
 
+// Values returned by 'process'
+// No complete step yet.
+#define DIR_NONE 0x0
 // Clockwise step.
 #define DIR_CW 0x10
 // Anti-clockwise step.
@@ -133,8 +58,8 @@ const int serialDataInterval = 5;
 int timeCurrent, timePrevious;
 
 // Incoming Serial Data
-String inputString = "";   // string variable to hold incoming data
-boolean stringCompleteFlag = false;  // inputString is complete (newline found)
+String inputString = "";                 // string variable to hold incoming data
+boolean stringCompleteFlag = false;          // variable to indicate inputString is complete (newline found)
 
 
 void setup() {
@@ -152,8 +77,7 @@ void loop () {
     resetVariables();
   }
   timeCurrent = millis();
-   // send data when interval has elapsed AND either count has changed
-  if ( (timeCurrent - timePrevious) > serialDataInterval ) {
+  if ( (timeCurrent - timePrevious) > serialDataInterval ) { // Enter into this only when interval has elapsed
     if (countOne != countPreviousOne || countTwo != countPreviousTwo) {
       sendDataToSerial();
       timePrevious = timeCurrent;
@@ -175,9 +99,12 @@ void resetVariables(){
   resetCount = 0;
 }
 
-// Create the Interrupt Service Routine (ISR) this is what happens when one
-// of the pins changes state. Interrupt is an important approach to avoid
-// missing state changes from the rotary encoder!
+/*
+  Create the Interrupt Service Routine (ISR)
+  this is what happens when one of the pins
+  changes state
+*/
+
 ISR(PCINT2_vect) {
 unsigned char result = distanceTool.process();
   if (result == DIR_CW) {
@@ -215,7 +142,10 @@ unsigned char result = distanceTool.process();
   }
 }
 
-// Send each of our variables out on Serial (to Excel)
+/*
+   OUTGOING SERIAL DATA PROCESSING CODE-------------------------------------------------------------------
+*/
+
 void sendDataToSerial() {
   Serial.print( (int) angleOne );
   Serial.print( DELIMETER );
@@ -239,77 +169,63 @@ void sendDataToSerial() {
   Serial.println();
 }
 
+/*
+ * INCOMING SERIAL DATA PROCESSING CODE-------------------------------------------------------------------
+ */
 
-// Receive commands via Serial (from Excel)
-void processIncomingSerial() {
+void processIncomingSerial()
+{
   getSerialData();
   parseSerialData();
 }
 
-// Gather characters from serial port to build inputString
+//Gather bits from serial port to build inputString
 void getSerialData() {
   while (Serial.available()) {
-    char inChar = (char)Serial.read();  // get new byte
-    inputString += inChar;              // add it to input string
-    if (inChar == '\n') {               // if we get a newline...
-      stringCompleteFlag = true;        // we have a complete string of data
+    char inChar = (char)Serial.read();      // get new byte
+    inputString += inChar;                  // add it to input string
+    if (inChar == '\n') {                   // if we get a newline...
+      stringCompleteFlag = true;            // we have a complete string of data to process
     }
   }
 }
 
-// Use the values from serial input to set program variables
-void parseSerialData() {
-  // When string is complete, we can process data from inputString
-  if (stringCompleteFlag) { 
-    // Zero out encoders
-    resetCount = getValue(inputString, ',', 0).toInt();
+void parseSerialData()
+{
+  if (stringCompleteFlag) { // process data from inputString to set program variables.
+    //process serial data - set variables using: var = getValue(inputString, ',', index).toInt(); // see getValue function below
 
-    // Override steps per revoltion (normally 360)
-    pointsPerRevolution = getValue(inputString, ',', 1).toDouble();
+    resetCount          = getValue(inputString, ',', 0).toInt();   //Data Out worksheet cell A5
+
+     pointsPerRevolution = getValue(inputString, ',', 1).toDouble();   //Data Out worksheet cell B5
+
+
     if(pointsPerRevolution > 0){
-      incrementAmount  = degreesPerRevolution / pointsPerRevolution;
-      Serial.println(incrementAmount);
+      incrementAmount     = degreesPerRevolution / pointsPerRevolution;
     }
 
-    inputString = "";               // reset inputString
-    stringCompleteFlag = false;     // reset stringComplete flag
+    inputString = "";                           // reset inputString
+    stringCompleteFlag = false;                 // reset stringComplete flag
   }
 }
 
-// Gets value from mDataString using an index and separator
-// Example:
-// given 'alice,bob,dana' and separator ','
-// index 0 returns 'alice'
-// index 1 returns 'bob'
-// index 2 returns 'dana'
-//
-// mDataString: String as read from Serial (mInputString)
-// separator: Character used to separate values (a comma)
-// index: where we want to look in the data 'array' for value
-String getValue(String mDataString, char separator, int index) {
+//Get value from inputString using a matching algorithm
+String getValue(String mDataString, char separator, int index)
+{ // mDataString is inputString, separator is a comma, index is where we want to look in the data 'array'
   int matchingIndex = 0;
   int strIndex[] = {0, -1};
   int maxIndex = mDataString.length()-1;
-  // loop until end of array or until we find a match
-  for(int i=0; i<=maxIndex && matchingIndex<=index; i++){
-    if(mDataString.charAt(i)==separator || i==maxIndex){ // if we hit a comma
-                                                         // OR end of the array
-      matchingIndex++;   // increment to track where we have looked
-      strIndex[0] = strIndex[1]+1;   // increment first substring index
-      strIndex[1] = (i == maxIndex) ? i+1 : i;   // set second substring index
+  for(int i=0; i<=maxIndex && matchingIndex<=index; i++){     // loop until end of array or until we find a match
+    if(mDataString.charAt(i)==separator || i==maxIndex){       // if we hit a comma OR we are at the end of the array
+      matchingIndex++;                                        // increment matchingIndex to keep track of where we have looked
+      // set substring parameters (see return)
+      strIndex[0] = strIndex[1]+1;                            // increment first substring index
+      // ternary operator in objective c - [condition] ? [true expression] : [false expression]
+      strIndex[1] = (i == maxIndex) ? i+1 : i;                // set second substring index
     }
   }
-  // if match return substring or ""
-  if (matchingIndex > index) {
-    return mDataString.substring(strIndex[0], strIndex[1]);
-  } else {
-    return "";
-  }
+  return matchingIndex>index ? mDataString.substring(strIndex[0], strIndex[1]) : ""; // if match return substring or ""
 }
-
-//===----------------------------------------------------------------------===//
-//    Below here is adaptation of Ben Buxton's 'Rotary Encoders Done Well'
-//===----------------------------------------------------------------------===//
 
 /*
    The below state table has, for each state (row), the new state
