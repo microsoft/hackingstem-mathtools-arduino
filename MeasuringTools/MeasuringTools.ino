@@ -1,7 +1,9 @@
 //===------__ Hacking STEM – MeasuringToolsCode.X.X.X.ino – Arduino __-----===//
 // For use with the "MEASURING TOOLS Using the Pythagorean Theorem to Explore
 // Topography in 2D/3D Space" lesson plan available from Microsoft Education
-// Workshop at http://aka.ms/hackingSTEM
+// Workshop at
+// https://www.microsoft.com/en-us/education/education-workshop/measuring-tools.aspx
+// http://aka.ms/hackingSTEM
 //
 // Overview:
 // This project uses Rotary Encoders to find angles.
@@ -68,7 +70,7 @@
 // lpd3806-360bm-g5-24c
 //
 // Based on project by Ben Buxton, who has a wonderful post and video
-// explaination of rotary encoders on arduino:
+// explanation of rotary encoders on arduino:
 // http://www.buxtronix.net/2011/10/rotary-encoders-done-properly.html
 //
 // Original Source
