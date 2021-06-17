@@ -78,7 +78,7 @@
 //
 // Comments, contributions, suggestions, bug reports, and feature requests
 // are welcome! For source code and bug reports see:
-// http://github.com/[TODO github path to Hacking STEM]
+// https://github.com/microsoft/hackingstem-mathtools-arduino
 //
 // Copyright [year], [your name] Microsoft EDU Workshop - HackingSTEM
 // MIT License terms detailed in LICENSE.md
