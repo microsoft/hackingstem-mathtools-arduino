@@ -2,7 +2,7 @@
 Microcontroller code for Microsoft Hacking STEM Using Pythagorean theorem to Measure TopographyUsing Pythagorean theorem to Measure Topography lesson plan adapted for Arduino
 
 # Getting Started
-1. Download lesson assets at https://www.microsoft.com/en-us/education/education-workshop/measuring-tools.aspx
+1. Download lesson assets at https://education.microsoft.com/lesson/2c32c4fa
 1. Build your Distance Wheel or Angle Finder!
 1. Use [Arduino IDE](https://www.arduino.cc/en/Main/Software) to flash the .ino to your [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3) microcontroller
 1. Verify data interactions in Excel

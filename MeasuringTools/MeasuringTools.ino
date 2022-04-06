@@ -2,7 +2,7 @@
 // For use with the "MEASURING TOOLS Using the Pythagorean Theorem to Explore
 // Topography in 2D/3D Space" lesson plan available from Microsoft Education
 // Workshop at
-// https://www.microsoft.com/en-us/education/education-workshop/measuring-tools.aspx
+// https://education.microsoft.com/lesson/2c32c4fa
 // http://aka.ms/hackingSTEM
 //
 // Overview:
